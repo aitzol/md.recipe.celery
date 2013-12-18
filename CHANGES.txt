@@ -1,0 +1,8 @@
+=======
+CHANGES
+=======
+
+1.0 (unreleased)
+================
+
+- Initial release. Based loosely on collective.recipe.celery.
