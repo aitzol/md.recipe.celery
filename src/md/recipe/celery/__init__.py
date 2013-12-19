@@ -10,7 +10,9 @@ import loader
 
 def zope_loader(app):
     return loader.ZopeLoader(
-        app, celery_conf='{celery_conf}', zope_conf='{zope_conf}')
+        app,
+        celery_conf='{celery_conf}',
+        zope_conf='{zope_conf}')
 """
 
 INIT_TEMPLATE = """
