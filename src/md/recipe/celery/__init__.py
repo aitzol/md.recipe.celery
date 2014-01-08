@@ -49,8 +49,6 @@ class Recipe(object):
         options = self.options
         logger = logging.getLogger(self.name)
         loader_filename_list  = []
-        import pdb;pdb.set_trace()
-        
         dest = options['config-path']
         if options.get('no-loader','false') != 'true':
             loader_filename = os.path.join(dest, 'zopeloader.py')
