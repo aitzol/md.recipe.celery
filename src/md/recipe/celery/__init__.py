@@ -48,31 +48,39 @@ class Recipe(object):
     def install(self):
         options = self.options
         logger = logging.getLogger(self.name)
-
+        loader_filename_list  = []
+        import pdb;pdb.set_trace()
+        
         dest = options['config-path']
-        loader_filename = os.path.join(dest, 'zopeloader.py')
+        if options.get('no-loader','false') != 'true':
+            loader_filename = os.path.join(dest, 'zopeloader.py')
 
-        if not os.path.exists(dest):
-            logger.info('Creating directory %s.' % dest)
-            os.makedirs(dest)
+            if not os.path.exists(dest):
+                logger.info('Creating directory %s.' % dest)
+                os.makedirs(dest)
 
-        baseloader_filename = os.path.join(
-            os.path.dirname(__file__), 'loader.py')
-        shutil.copy(baseloader_filename, dest)
-
-        loader_file = open(loader_filename, 'w')
-        loader_file.write(
-            LOADER_TEMPLATE.format(
-                celery_conf=options.get('celery_conf'),
-                zope_conf=options.get('zope_conf')))
-        loader_file.close()
-        logger.info('Generated loader file %s.' % loader_filename)
-
+            baseloader_filename = os.path.join(
+                os.path.dirname(__file__), 'loader.py')
+            shutil.copy(baseloader_filename, dest)
+            loader_file = open(loader_filename, 'w')
+            loader_file.write(
+                LOADER_TEMPLATE.format(
+                    celery_conf=options.get('celery_conf'),
+                    zope_conf=options.get('zope_conf')))
+            loader_file.close()
+            loader_filename_list.append(loader_fileanme)
+            logger.info('Generated loader file %s.' % loader_filename)
+        logger.info('Using default loader')
+        if options.get('extra-paths'):
+            dest += '\n' + options.get('extra-paths')
+            
         celery_egg_options = {
             'eggs': 'celery',
             'extra-paths': dest,
             'initialization': INIT_TEMPLATE.format(
                 logging_conf=options.get('logging_conf'))}
+        if options.get('no-init','false') == 'true':
+            celery_egg_options.pop('initialization')
         if 'eggs' in options:
             celery_egg_options['eggs'] = '\n'.join(['celery']
                                                    + options['eggs'].split())
@@ -83,6 +91,6 @@ class Recipe(object):
             self.name,
             celery_egg_options)
 
-        return [loader_filename] + list(celery_egg.install())
+        return loader_filename_list + list(celery_egg.install())
 
     update = install
